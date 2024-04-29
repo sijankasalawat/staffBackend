@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv=require('dotenv');
 const connectToDB = require('./database/db');
 const cloudinary = require('cloudinary');
+const cors = require('cors')
 
 // const cors = require('cors');
 const app = express();
@@ -9,12 +10,16 @@ const app = express();
 dotenv.config();
 connectToDB();
 app.use(express.json());
-app.get('/hello', (req, res) => {
-    //res.send('Hello World2!');
-    res.status(200).send({
-        message: 'Hello World!'
-    });
-});
+
+const corsOptions={
+  origin:true,
+  credentials:true,
+  optionSuccessStatus:200
+}
+app.use(cors(corsOptions));
+
+app.use('/api/user',require('./routes/userRoute'))
+
 cloudinary.config({ 
     cloud_name: process.env.CLOUD_NAME, 
     api_key: process.env.CLOUD_API_KEY, 

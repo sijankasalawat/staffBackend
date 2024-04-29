@@ -1,21 +1,25 @@
 const moongose = require("mongoose");
 const crypto = require("crypto");
+const { type } = require("os");
 
 const userSchema = new moongose.Schema({
     avatar: {
       type: String,
     },
+    username:{
+      type:String,
+    },
     fName: {
       type: String,
-      require: true,
+      
     },
     lName: {
       type: String,
-      require: true,
+      
     },
     email: {
       type: String,
-      require: true,
+    
     },
     address:{
       type:String
@@ -26,14 +30,12 @@ const userSchema = new moongose.Schema({
     },
     password: {
       type: String,
-      require: true,
     },
-    product:[
-      {
-        type:moongose.Schema.Types.ObjectId,
-        ref:'Product'
-      }
-    ],
+    role: {
+      type: String,
+      enum: ['admin', 'employee', 'hr'],
+      required: true
+    },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
   });  
