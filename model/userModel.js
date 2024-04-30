@@ -31,6 +31,10 @@ const userSchema = new moongose.Schema({
     password: {
       type: String,
     },
+    designation: {
+      enum:['Accountant','hr','Developer','Manager','Sale','Support','Designer'],
+      type: String,
+    },
     role: {
       type: String,
       enum: ['admin', 'employee', 'hr'],

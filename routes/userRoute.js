@@ -4,5 +4,6 @@ const userController = require('../controller/userController');
 
 router.post('/createPredefinedAdmin', userController.createPredefinedAdmin);
 router.post('/adminLogin', userController.adminLogin);
+router.post('/createNewUser', userController.createNewUser);
 
 module.exports=router;
