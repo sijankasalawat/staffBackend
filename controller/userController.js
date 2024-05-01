@@ -32,15 +32,16 @@ const createPredefinedAdmin = async (req, res) => {
 
 const adminLogin = async (req, res) => {
   try {
+    console.log('req.body: ', req.body);
     const { username, password } = req.body;
 
-    const adminUser = await User.findOne({ username, role: "admin" });
-    console.log("adminUser: ", adminUser);
-    if (!adminUser) {
-      return res.status(404).json({ message: "Admin user not found" });
+    const user = await User.findOne({ username });
+    console.log("adminUser: ", user);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const isMatch = await bcrypt.compare(password, adminUser.password);
+    const isMatch = await bcrypt.compare(password, user.password);
     console.log("isMatch: ", isMatch);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid password" });
@@ -48,7 +49,7 @@ const adminLogin = async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { userId: adminUser._id, username: adminUser.username, role: adminUser.role },
+      { userId: user._id, username: user.username, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1h" } // Token expires in 1 hour
     );
@@ -59,6 +60,7 @@ const adminLogin = async (req, res) => {
         message: "Admin login successful",
         success: true,
         token: token, // Send the generated token in the response
+        user
       });
   } catch (error) {
     console.error("Error logging in admin user:", error);

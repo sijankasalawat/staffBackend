@@ -3,20 +3,21 @@ const dotenv=require('dotenv');
 const connectToDB = require('./database/db');
 const cloudinary = require('cloudinary');
 const cors = require('cors')
+const bodyParser = require('body-parser');
 
-// const cors = require('cors');
 const app = express();
 
 dotenv.config();
 connectToDB();
 app.use(express.json());
-
 const corsOptions={
   origin:true,
   credentials:true,
   optionSuccessStatus:200
 }
 app.use(cors(corsOptions));
+app.use(bodyParser.urlencoded({ extended: false }))
+
 
 app.use('/api/user',require('./routes/userRoute'))
 
