@@ -32,7 +32,7 @@ const createPredefinedAdmin = async (req, res) => {
 
 const adminLogin = async (req, res) => {
   try {
-    console.log('req.body: ', req.body);
+    console.log("req.body: ", req.body);
     const { username, password } = req.body;
 
     const user = await User.findOne({ username });
@@ -54,22 +54,18 @@ const adminLogin = async (req, res) => {
       { expiresIn: "1h" } // Token expires in 1 hour
     );
 
-    res
-      .status(200)
-      .json({
-        message: "Admin login successful",
-        success: true,
-        token: token, // Send the generated token in the response
-        user
-      });
+    res.status(200).json({
+      message: "Admin login successful",
+      success: true,
+      token: token, // Send the generated token in the response
+      user,
+    });
   } catch (error) {
     console.error("Error logging in admin user:", error);
-    res
-      .status(500)
-      .json({
-        message: error?.message || "Internal server error",
-        success: false,
-      });
+    res.status(500).json({
+      message: error?.message || "Internal server error",
+      success: false,
+    });
   }
 };
 const createNewUser = async (req, res) => {
@@ -90,7 +86,7 @@ const createNewUser = async (req, res) => {
     !fName ||
     !lName ||
     !email ||
-    !designation||
+    !designation ||
     !phoneNumber ||
     !username ||
     !password ||
@@ -100,48 +96,48 @@ const createNewUser = async (req, res) => {
       success: false,
       message: "All fields are required",
     });
-  }
+  } else {
+    try {
+      // Check if the user already exists
+      const existingUser = await User.findOne({ username: username });
+      if (existingUser) {
+        return res.json({
+          success: false,
+          message: "User already exists",
+        });
+      }
 
-  try {
-    // Check if the user already exists
-    const existingUser = await User.findOne({ username: username });
-    if (existingUser) {
+      // Encrypt the password
+      const randomSalt = await bcrypt.genSalt(10);
+      const encryptedPassword = await bcrypt.hash(password, randomSalt);
+
+      // Create a new user instance
+      const newUser = new User({
+        fName,
+        lName,
+        email,
+        designation,
+        phoneNumber,
+        username,
+        role,
+        password: encryptedPassword,
+      });
+
+      // Save the new user to the database
+      await newUser.save();
+
+      // Return success response
       return res.json({
+        success: true,
+        message: "User created successfully",
+      });
+    } catch (error) {
+      console.error("Error creating new user:", error);
+      return res.status(500).json({
         success: false,
-        message: "User already exists",
+        message: "Internal server error",
       });
     }
-
-    // Encrypt the password
-    const randomSalt = await bcrypt.genSalt(10);
-    const encryptedPassword = await bcrypt.hash(password, randomSalt);
-
-    // Create a new user instance
-    const newUser = new User({
-      fName,
-      lName,
-      email,
-      designation,
-      phoneNumber,
-      username,
-      role,
-      password: encryptedPassword,
-    });
-
-    // Save the new user to the database
-    await newUser.save();
-
-    // Return success response
-    return res.json({
-      success: true,
-      message: "User created successfully",
-    });
-  } catch (error) {
-    console.error("Error creating new user:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
   }
 };
 
