@@ -141,4 +141,34 @@ const createNewUser = async (req, res) => {
   }
 };
 
+getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json({
+      success: true,
+      users,
+      message: "Users fetched successfully",
+    });
+  
+  } catch (error) {
+    res.status(500).json({ 
+      success: false,
+      message: "Internal server error",
+     });
+  }
+
+ 
+
+}
+userLogout = async (req, res) => {
+  try {
+    res
+      .status(200)
+      .json({ message: "User logged out successfully", success: true });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal server error", success: false });
+  }
+}
 module.exports = { createPredefinedAdmin, adminLogin, createNewUser };
