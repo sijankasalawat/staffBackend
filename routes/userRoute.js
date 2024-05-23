@@ -7,5 +7,7 @@ router.post('/createPredefinedAdmin', userController.createPredefinedAdmin);
 router.post('/adminLogin', userController.adminLogin);
 router.post('/createNewUser', userController.createNewUser);
 router.post('/employeeAttendence',attendanceController.markAttendance );
+router.get('/getUserById',userController.getUserById);
+router.get('/getAllUsers',userController.getAllUsers);
 
 module.exports=router;
