@@ -13,7 +13,7 @@ const AttendanceSchema = new mongoose.Schema({
   },
   timestamp: {
     type: Date,
-    default: Date.now,
+    default: () => new Date().setHours(0, 0, 0, 0),
   },
 });
 

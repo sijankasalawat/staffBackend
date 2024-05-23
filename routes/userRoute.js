@@ -6,8 +6,10 @@ const attendanceController = require('../controller/attendenceController');
 router.post('/createPredefinedAdmin', userController.createPredefinedAdmin);
 router.post('/adminLogin', userController.adminLogin);
 router.post('/createNewUser', userController.createNewUser);
-router.post('/employeeAttendence',attendanceController.markAttendance );
-router.get('/getUserById',userController.getUserById);
-router.get('/getAllUsers',userController.getAllUsers);
+router.post('/markAttendance', attendanceController.markAttendance); // Changed the path to /markAttendance for marking attendance
+router.post('/updateAttendance', attendanceController.updateAttendance); // New route for updating attendance
 
-module.exports=router;
+router.get('/getUserById', userController.getUserById);
+router.get('/getAllUsers', userController.getAllUsers);
+
+module.exports = router;

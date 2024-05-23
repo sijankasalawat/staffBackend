@@ -177,7 +177,7 @@ const getUserById = async (req, res) =>{
   }
 
 }
-userLogout = async (req, res) => {
+const userLogout = async (req, res) => {
   try {
     res
       .status(200)
