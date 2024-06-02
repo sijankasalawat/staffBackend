@@ -21,6 +21,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use('/api/user',require('./routes/userRoute'))
 
+
 cloudinary.config({ 
     cloud_name: process.env.CLOUD_NAME, 
     api_key: process.env.CLOUD_API_KEY, 

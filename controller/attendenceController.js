@@ -137,8 +137,58 @@ const updateAttendance = async (req, res) => {
     });
   }
 };
+const attendanceRecords = async (req, res) => {
+  try {
+    // Validate if req.params.id is a valid ObjectId
+    if (!ObjectId.isValid(req.params.id)) {
+      return res.json({
+        success: false,
+        message: "Invalid user ID",
+      });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    
+    // Get the start of today
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    // Get the end of today
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    // Find attendance records for the user for today
+    const attendances = await Attendance.find({
+      userId: user._id,
+      date: { $gte: todayStart, $lte: todayEnd }
+    });
+
+    // Extract the status of each attendance record
+    const statuses = attendances.map(attendance => attendance.status);
+
+    return res.json({
+      success: true,
+      statuses,
+    });
+  } catch (error) {
+    console.error("Error fetching attendance records:", error);
+    return res.status(500).json({ 
+      success: false,
+      message: "Internal server error",
+    });
+  }
+}
+
+
 
 module.exports = {
   markAttendance,
   updateAttendance,
+  attendanceRecords
 };
