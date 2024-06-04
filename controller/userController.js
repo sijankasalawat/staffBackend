@@ -179,13 +179,11 @@ const getUserById = async (req, res) =>{
 }
 const userLogout = async (req, res) => {
   try {
-    res
-      .status(200)
-      .json({ message: "User logged out successfully", success: true });
+  
+    res.status(200).json({ message: "User logged out successfully", success: true });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Internal server error", success: false });
+    res.status(500).json({ message: "Internal server error", success: false });
   }
-}
+};
+
 module.exports = { createPredefinedAdmin, adminLogin, createNewUser, getUserById, getAllUsers, userLogout };
