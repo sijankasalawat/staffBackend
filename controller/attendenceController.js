@@ -1,5 +1,9 @@
 const Attendance = require('../model/attendenceModel');
 const User = require("../model/userModel");
+const mongoose = require('mongoose');
+
+const ObjectId = mongoose.Types.ObjectId;
+
 
 const markAttendance = async (req, res) => {
   try {
@@ -185,10 +189,87 @@ const attendanceRecords = async (req, res) => {
   }
 }
 
+const getTotalPresentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(`Received ID: ${id}`);  // Log the received ID
 
+    if (!ObjectId.isValid(id)) {
+      return res.json({
+        success: false,
+        message: "Invalid user ID",
+      });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const totalPresent = await Attendance.countDocuments({
+      userId: id,
+      status: 'Present',
+    });
+
+    return res.json({
+      success: true,
+      totalPresent,
+    });
+  } catch (error) {
+    console.error("Error fetching total present days:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+const getTotalAbsentById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!ObjectId.isValid(id)) {
+      return res.json({
+        success: false,
+        message: "Invalid user ID",
+      });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const totalAbsent = await Attendance.countDocuments({
+      userId: id,
+      status: 'Absent',
+    });
+
+    return res.json({
+      success: true,
+      totalAbsent,
+    });
+  } catch (error) {
+    console.error("Error fetching total absent days:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+ 
 
 module.exports = {
   markAttendance,
   updateAttendance,
-  attendanceRecords
+  attendanceRecords,
+  getTotalPresentById,
+  getTotalAbsentById,
 };

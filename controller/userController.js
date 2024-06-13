@@ -177,6 +177,31 @@ const getUserById = async (req, res) =>{
   }
 
 }
+const deleteUserById = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findByIdAndDelete(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
 const userLogout = async (req, res) => {
   try {
   
@@ -186,4 +211,4 @@ const userLogout = async (req, res) => {
   }
 };
 
-module.exports = { createPredefinedAdmin, adminLogin, createNewUser, getUserById, getAllUsers, userLogout };
+module.exports = { createPredefinedAdmin, adminLogin, createNewUser, getUserById, getAllUsers, userLogout, deleteUserById };

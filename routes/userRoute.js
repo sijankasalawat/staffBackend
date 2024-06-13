@@ -13,11 +13,14 @@ router.get('/attendanceRecord/:id', attendanceController.attendanceRecords);// N
 router.get('/getUserById', userController.getUserById);
 router.get('/getAllUsers', userController.getAllUsers);
 router.post('/userLogout',userController.userLogout,);
-
+router.delete('/userDeleteById/:id', userController.deleteUserById);
+router.get('/getTotalPresentById/:id', attendanceController.getTotalPresentById);
+router.get('/getTotalAbsentById/:id', attendanceController.getTotalAbsentById);
 
 //event
 router.post('/createEvent', eventController.createEvent);
 router.get('/getAllEvents', eventController.getAllEvents);
 router.delete('/deleteEvent/:id', eventController.deleteEvent);
+
 
 module.exports = router;
