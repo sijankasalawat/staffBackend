@@ -49,6 +49,7 @@ const createLeaveRequest = async (req, res) => {
         toDate,
         reason,
         file: uploadedFile.secure_url,
+        status:'Pending'
       });
   
       // Save the leave request to the database
@@ -80,6 +81,52 @@ const createLeaveRequest = async (req, res) => {
       });
     }
   };
+const updateLeaveRequest = async (req, res) => {
+    try {
+      const { title, fromDate, toDate, reason , status} = req.body;
+  
+      const leaveRequestId = req.params.id;
+      // Check if the user exists
+      const leaveRequestData = await LeaveRequest.findById(leaveRequestId);
+      if (!leaveRequestData) {
+        return res.status(404).json({
+          success: false,
+          message: "Leave Request not found.",
+        });
+      }
+  
+      // Create a new leave request
+      if(title) leaveRequestData.title = title;
+      if(fromDate) leaveRequestData.fromDate = fromDate;
+      if(toDate) leaveRequestData.toDate = toDate;
+      if(reason) leaveRequestData.reason = reason;
+      if(status) leaveRequestData.status = status;
+  
+      // Save the leave request to the database
+      const savedLeaveRequest = await leaveRequestData.save();
+  
+      res.status(201).json({
+        success: true,
+        message: "Leave request updated successfully.",
+        leaveRequest: savedLeaveRequest,
+      });
+    } catch (error) {
+      console.error('Error updating leave request:', error);
+  
+      // Handle specific error cases
+      if (error.name === "ValidationError") {
+        return res.status(400).json({
+          success: false,
+          message: "Validation error. Please check your input.",
+        });
+      }
+  
+      res.status(500).json({
+        success: false,
+        message: "Server Error",
+      });
+    }
+  };
   
 
 const getAllLeaveRequests = async (req, res) => {
@@ -91,15 +138,40 @@ const getAllLeaveRequests = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
-const getAllLeaveRequestsByUserId = async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const leaveRequests = await LeaveRequest.find({ userId });
-        res.status(200).json(leaveRequests);
-    } catch (error) {
-        console.error('Error fetching leave requests:', error);
-        res.status(500).json({ message: 'Internal server error' });
+const getLeaveRequestsByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId; // Extract user ID from URL params
+
+    // Check if the user exists
+    const user = await User.findById(userId).populate('leaveRequests');
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
     }
+
+    // Respond with the user's leave requests
+    res.status(200).json({
+      success: true,
+      leaveRequests: user.leaveRequests,
+    });
+  } catch (error) {
+    console.error('Error fetching leave requests:', error);
+
+    // Handle specific error cases
+    if (error.name === "CastError") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID format.",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
 };
 
 const deleteLeaveRequest = async (req, res) => {
@@ -115,4 +187,4 @@ const deleteLeaveRequest = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 }
-module.exports = { createLeaveRequest, getAllLeaveRequests, getAllLeaveRequestsByUserId, deleteLeaveRequest }
+module.exports = { createLeaveRequest, getAllLeaveRequests, getLeaveRequestsByUserId, deleteLeaveRequest , updateLeaveRequest}

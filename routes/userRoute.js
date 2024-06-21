@@ -25,8 +25,9 @@ router.delete('/deleteEvent/:id', eventController.deleteEvent);
 
 //leave Request
 router.post('/createLeaveRequest/:userId', leaveRequestController.createLeaveRequest);
+router.put('/leaveRequestUpdate/:id', leaveRequestController.updateLeaveRequest);
 router.get('/getAllLeaveRequests', leaveRequestController.getAllLeaveRequests);
-router.get('/getAllLeaveRequestsByUserId/:userId', leaveRequestController.getAllLeaveRequestsByUserId);
+router.get('/getLeaveRequestsByUserId/:userId', leaveRequestController.getLeaveRequestsByUserId);
 router.delete('/deleteLeaveRequest/:id', leaveRequestController.deleteLeaveRequest);
 
 

@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+
+
 const LeaveRequestSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -25,7 +27,8 @@ const LeaveRequestSchema = new mongoose.Schema({
     type: String,
   },
   status: {
-    type: String,
+    type:String,
+    enum:['Pending','Approved','Rejected'],
   },
 });
 const LeaveRequest = mongoose.model("LeaveRequest", LeaveRequestSchema);
