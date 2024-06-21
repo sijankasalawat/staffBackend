@@ -1,8 +1,8 @@
-const moongose = require("mongoose");
+const mongoose = require("mongoose");
 const crypto = require("crypto");
 const { type } = require("os");
 
-const userSchema = new moongose.Schema({
+const userSchema = new mongoose.Schema({
     avatar: {
       type: String,
     },
@@ -40,6 +40,12 @@ const userSchema = new moongose.Schema({
       enum: ['admin', 'employee', 'hr'],
       required: true
     },
+    leaveRequests: {
+      type: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'LeaveRequest',}],
+      default: [],
+    },
     resetPasswordToken: String,
     resetPasswordExpire: Date,
   });  
@@ -58,5 +64,5 @@ userSchema.methods.getResetPasswordToken = function () {
   };
 
   
-const User =moongose.model('User',userSchema);
+const User =mongoose.model('User',userSchema);
 module.exports=User;

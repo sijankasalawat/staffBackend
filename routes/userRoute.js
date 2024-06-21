@@ -2,6 +2,7 @@ const router = require('express').Router();
 const userController = require('../controller/userController');
 const attendanceController = require('../controller/attendenceController');
 const eventController = require('../controller/eventController');
+const leaveRequestController = require('../controller/leaveRequestController');
 // const authGuard = require('../middleware/auth');
 
 router.post('/createPredefinedAdmin', userController.createPredefinedAdmin);
@@ -21,6 +22,13 @@ router.get('/getTotalAbsentById/:id', attendanceController.getTotalAbsentById);
 router.post('/createEvent', eventController.createEvent);
 router.get('/getAllEvents', eventController.getAllEvents);
 router.delete('/deleteEvent/:id', eventController.deleteEvent);
+
+//leave Request
+router.post('/createLeaveRequest/:userId', leaveRequestController.createLeaveRequest);
+router.get('/getAllLeaveRequests', leaveRequestController.getAllLeaveRequests);
+router.get('/getAllLeaveRequestsByUserId/:userId', leaveRequestController.getAllLeaveRequestsByUserId);
+router.delete('/deleteLeaveRequest/:id', leaveRequestController.deleteLeaveRequest);
+
 
 
 module.exports = router;
