@@ -129,15 +129,15 @@ const updateLeaveRequest = async (req, res) => {
   };
   
 
-const getAllLeaveRequests = async (req, res) => {
+  const getAllLeaveRequests = async (req, res) => {
     try {
-        const leaveRequests = await LeaveRequest.find();
-        res.status(200).json(leaveRequests);
+      const leaveRequests = await LeaveRequest.find();
+      res.status(200).json(leaveRequests);
     } catch (error) {
-        console.error('Error fetching leave requests:', error);
-        res.status(500).json({ message: 'Internal server error' });
+      console.error('Error fetching leave requests:', error);
+      res.status(500).json({ message: 'Internal server error' });
     }
-};
+  };
 const getLeaveRequestsByUserId = async (req, res) => {
   try {
     const userId = req.params.userId; // Extract user ID from URL params
