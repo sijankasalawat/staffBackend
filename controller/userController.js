@@ -163,24 +163,32 @@ const getAllUsers = async (req, res) => {
 
 }
 
-const getUserById = async (req, res) =>{
-  try{
-    const user = await User.findById(req.params.id);
-    res.json(user);
+const getUserById = async (req, res) => {
+  try {
+    const userId = req.params.id; // Ensure req.params.id is correctly assigned
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found.',
+      });
+    }
+
     res.status(200).json({
       success: true,
       user,
-      message: "User fetched successfully",
+      message: 'User fetched successfully',
     });
-
   } catch (error) {
-    res.status(500).json({ 
+    console.error('Error fetching user by ID:', error);
+    res.status(500).json({
       success: false,
-      message: "Internal server error",
-     });
+      message: 'Internal server error',
+    });
   }
+};
 
-}
 const updateUserProfile = async (req, res) => {
   try {
   
