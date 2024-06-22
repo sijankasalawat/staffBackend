@@ -17,6 +17,7 @@ router.post('/userLogout',userController.userLogout,);
 router.delete('/userDeleteById/:id', userController.deleteUserById);
 router.get('/getTotalPresentById/:id', attendanceController.getTotalPresentById);
 router.get('/getTotalAbsentById/:id', attendanceController.getTotalAbsentById);
+router.put('/updateUserById/:id', userController.updateUserProfile);
 
 //event
 router.post('/createEvent', eventController.createEvent);

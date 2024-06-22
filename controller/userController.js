@@ -1,6 +1,8 @@
 const User = require("../model/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const cloudinary = require("cloudinary").v2;
+
 
 const createPredefinedAdmin = async (req, res) => {
   try {
@@ -160,9 +162,11 @@ const getAllUsers = async (req, res) => {
  
 
 }
+
 const getUserById = async (req, res) =>{
   try{
     const user = await User.findById(req.params.id);
+    res.json(user);
     res.status(200).json({
       success: true,
       user,
@@ -177,8 +181,59 @@ const getUserById = async (req, res) =>{
   }
 
 }
+const updateUserProfile = async (req, res) => {
+  try {
+  
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found.',
+      });
+    }
+
+    let avatarUrl = null;
+    if (typeof req.body.avatar !== 'string' && req.files.avatar) {
+      const { avatar } = req.files;
+      console.log(' avatar: ',  avatar);
+      const uploadedAvatar = await cloudinary.uploader.upload(avatar.path, { folder: 'avatars' });
+      if (!uploadedAvatar || !uploadedAvatar.secure_url) {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to upload avatar to Cloudinary',
+        });
+      }
+      avatarUrl = uploadedAvatar.secure_url;
+    } else {
+      avatarUrl = req.body.avatar;
+    }
+
+    // Update user profile with new data
+    user.fName = req.body.fName || user.fName;
+    user.lName = req.body.lName || user.lName;
+    user.phoneNumber = req.body.phoneNumber || user.phoneNumber;
+    user.address = req.body.address || user.address;
+    user.avatar = avatarUrl || user.avatar;
+
+    // Save the updated user profile
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'User profile updated successfully.',
+      user: user,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'Server Error',
+    });
+  }
+};
 const deleteUserById = async (req, res) => {
   try {
+    
     const userId = req.params.id;
     const user = await User.findByIdAndDelete(userId);
 
@@ -211,4 +266,4 @@ const userLogout = async (req, res) => {
   }
 };
 
-module.exports = { createPredefinedAdmin, adminLogin, createNewUser, getUserById, getAllUsers, userLogout, deleteUserById };
+module.exports = { createPredefinedAdmin, adminLogin, createNewUser, getUserById, getAllUsers, userLogout, deleteUserById,updateUserProfile };
