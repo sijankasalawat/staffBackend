@@ -2,6 +2,8 @@ const User = require("../model/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("cloudinary").v2;
+const crypto = require("crypto");
+const { sendEmail } = require("../middleware/sendEmail");
 
 
 const createPredefinedAdmin = async (req, res) => {
@@ -274,4 +276,55 @@ const userLogout = async (req, res) => {
   }
 };
 
-module.exports = { createPredefinedAdmin, adminLogin, createNewUser, getUserById, getAllUsers, userLogout, deleteUserById,updateUserProfile };
+const forgotPassword = async (req, res)=>{
+  console.log(req.body);
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "Email not found.",
+      });
+    }
+    const resetPasswordToken = user.getResetPasswordToken();
+
+    await user.save();
+
+    // Assuming you have a configuration variable for the frontend URL
+    const frontendBaseUrl = process.env.FRONTEND_BASE_URL || "http://localhost:3000";
+    const resetUrl = `${frontendBaseUrl}/password/reset/${resetPasswordToken}`;
+
+    const message = `Reset Your Password by clicking on the link below: \n\n ${resetUrl}`;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "Reset Password",
+        message,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: `Email sent to ${user.email}`,
+      });
+    } catch (error) {
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;
+      await user.save();
+
+      res.json({
+        success: false,
+        message: error.message,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+module.exports = { createPredefinedAdmin, adminLogin, createNewUser, getUserById, getAllUsers, userLogout, deleteUserById,updateUserProfile,forgotPassword };

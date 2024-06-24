@@ -32,5 +32,10 @@ router.get('/getLeaveRequestsByUserId/:userId', leaveRequestController.getLeaveR
 router.delete('/deleteLeaveRequest/:id', leaveRequestController.deleteLeaveRequest);
 
 
+// forgot password
+router.route("/forgot/password").post(userController.forgotPassword);
+
+
+
 
 module.exports = router;
