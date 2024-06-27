@@ -1,4 +1,5 @@
 const Document = require('../model/documentModel');
+const mongoose = require('mongoose');
 const User = require("../model/userModel");
 const cloudinary = require("cloudinary").v2;
 
@@ -93,4 +94,4 @@ const getDocumentById = async (req, res) => {
         });
     }
 }
-module.exports = addDocument
+module.exports = {addDocument,}

@@ -3,6 +3,7 @@ const userController = require('../controller/userController');
 const attendanceController = require('../controller/attendenceController');
 const eventController = require('../controller/eventController');
 const leaveRequestController = require('../controller/leaveRequestController');
+const addDocumentController = require("../controller/addDocumentController")
 // const authGuard = require('../middleware/auth');
 
 router.post('/createPredefinedAdmin', userController.createPredefinedAdmin);
@@ -30,6 +31,9 @@ router.put('/leaveRequestUpdate/:id', leaveRequestController.updateLeaveRequest)
 router.get('/getAllLeaveRequests', leaveRequestController.getAllLeaveRequests);
 router.get('/getLeaveRequestsByUserId/:userId', leaveRequestController.getLeaveRequestsByUserId);
 router.delete('/deleteLeaveRequest/:id', leaveRequestController.deleteLeaveRequest);
+
+//document
+router.post('/addDocument/:userId',addDocumentController.addDocument)
 
 
 // forgot password
