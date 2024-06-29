@@ -94,4 +94,4 @@ const getDocumentById = async (req, res) => {
         });
     }
 }
-module.exports = {addDocument,}
+module.exports = {addDocument,getDocumentById}

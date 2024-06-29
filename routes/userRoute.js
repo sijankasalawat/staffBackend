@@ -34,7 +34,8 @@ router.delete('/deleteLeaveRequest/:id', leaveRequestController.deleteLeaveReque
 
 //document
 router.post('/addDocument/:userId',addDocumentController.addDocument)
-
+router.put('/changePassword/:userId', userController.changePassword);
+router.post('/changeadminpassword',userController.resetAdminPassword);
 
 // forgot password
 router.route("/forgot/password").post(userController.forgotPassword);

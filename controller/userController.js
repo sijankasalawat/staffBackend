@@ -8,31 +8,61 @@ const { sendEmail } = require("../middleware/sendEmail");
 
 const createPredefinedAdmin = async (req, res) => {
   try {
+    // Check if an admin user already exists
     const existingAdmin = await User.findOne({ role: "admin" });
+
     if (existingAdmin) {
-      return res
-        .status(400)
-        .json({ message: "Predefined admin user already exists" });
+      return res.status(400).json({ message: "Predefined admin user already exists" });
     }
+
+    // Create a new admin user
     const newAdmin = new User({
-      username: "admin",
-      password: "adminpassword",
+      username: "admin2", // Replace with your desired admin username
+      password: "adminpassword", // Replace with your desired admin password
       role: "admin",
     });
 
+    // Hash the password using bcrypt
     const salt = await bcrypt.genSalt(10);
     newAdmin.password = await bcrypt.hash(newAdmin.password, salt);
 
+    // Save the new admin user to the database
     await newAdmin.save();
 
-    res
-      .status(201)
-      .json({ message: "Predefined admin user created successfully" });
+    res.status(201).json({ message: "Predefined admin user created successfully" });
   } catch (error) {
     console.error("Error creating predefined admin user:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+const resetAdminPassword = async (req, res) => {
+  try {
+    const { newPassword } = req.body;
+
+    // Find the existing admin user
+    const existingAdmin = await User.findOne({ role: "admin" });
+
+    if (!existingAdmin) {
+      return res.status(404).json({ message: "Admin user not found" });
+    }
+
+    // Generate salt and hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update admin user's password
+    existingAdmin.password = hashedPassword;
+
+    // Save updated admin user
+    await existingAdmin.save();
+
+    res.status(200).json({ message: "Admin password reset successfully" });
+  } catch (error) {
+    console.error("Error resetting admin password:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 const adminLogin = async (req, res) => {
   try {
@@ -326,5 +356,37 @@ const forgotPassword = async (req, res)=>{
     });
   }
 };
+ const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const { userId } = req.params;
+    const user = await User.findById(userId);   
+     if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Old password is incorrect.",
+      });
+    }
+    user.password = newPassword;
+    await user.save();
+    res.status(200).json({
+      success: true,  
+      message: "Password changed successfully.",
+    });
+  } catch (error) {
+    console.log
+    res.status(500).json({
+      success: false,
+      message: "Internal server error.",
+    });
+  }
+};
 
-module.exports = { createPredefinedAdmin, adminLogin, createNewUser, getUserById, getAllUsers, userLogout, deleteUserById,updateUserProfile,forgotPassword };
+module.exports = { createPredefinedAdmin, adminLogin, createNewUser, getUserById, getAllUsers, userLogout, deleteUserById,updateUserProfile,forgotPassword,changePassword,resetAdminPassword };
