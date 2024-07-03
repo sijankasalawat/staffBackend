@@ -3,7 +3,8 @@ const userController = require('../controller/userController');
 const attendanceController = require('../controller/attendenceController');
 const eventController = require('../controller/eventController');
 const leaveRequestController = require('../controller/leaveRequestController');
-const addDocumentController = require("../controller/addDocumentController")
+const addProjectController = require("../controller/addProjectController");
+const addDocumentController = require("../controller/addDocumentController");
 // const authGuard = require('../middleware/auth');
 
 router.post('/createPredefinedAdmin', userController.createPredefinedAdmin);
@@ -39,6 +40,9 @@ router.post('/changeadminpassword',userController.resetAdminPassword);
 
 // forgot password
 router.route("/forgot/password").post(userController.forgotPassword);
+
+//project
+router.post("/createProject",addProjectController.addProject);
 
 
 
