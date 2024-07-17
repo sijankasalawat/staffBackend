@@ -66,17 +66,27 @@ const resetAdminPassword = async (req, res) => {
 
 const adminLogin = async (req, res) => {
   try {
-    console.log("req.body: ", req.body);
+    console.log("Request Body:", req.body);
     const { username, password } = req.body;
 
+    // Fetch the user from the database
     const user = await User.findOne({ username });
-    console.log("adminUser: ", user);
+    console.log("Fetched User:", user);
+
+    // Check if user exists
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
+    // Check if user has a password field
+    if (!user.password) {
+      return res.status(400).json({ message: "Password not found for user" });
+    }
+
+    // Compare the password with the hashed password in the database
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log("isMatch: ", isMatch);
+    console.log("Password Match:", isMatch);
+
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid password" });
     }
@@ -356,17 +366,21 @@ const forgotPassword = async (req, res)=>{
     });
   }
 };
- const changePassword = async (req, res) => {
+
+const changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
     const { userId } = req.params;
-    const user = await User.findById(userId);   
-     if (!user) {
+
+    const user = await User.findById(userId);
+
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found.",
       });
     }
+
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) {
       return res.status(400).json({
@@ -374,19 +388,25 @@ const forgotPassword = async (req, res)=>{
         message: "Old password is incorrect.",
       });
     }
-    user.password = newPassword;
+
+    // Hash the new password before saving
+    const hashedPassword = await bcrypt.hash(newPassword, 10); // Adjust saltRounds as needed
+
+    user.password = hashedPassword;
     await user.save();
+
     res.status(200).json({
-      success: true,  
+      success: true,
       message: "Password changed successfully.",
     });
   } catch (error) {
-    console.log
+    console.error("Error changing password:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error.",
     });
   }
 };
+
 
 module.exports = { createPredefinedAdmin, adminLogin, createNewUser, getUserById, getAllUsers, userLogout, deleteUserById,updateUserProfile,forgotPassword,changePassword,resetAdminPassword };

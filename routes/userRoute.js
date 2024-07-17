@@ -5,7 +5,7 @@ const eventController = require('../controller/eventController');
 const leaveRequestController = require('../controller/leaveRequestController');
 const addProjectController = require("../controller/addProjectController");
 const addDocumentController = require("../controller/addDocumentController");
-// const authGuard = require('../middleware/auth');
+const authGuard = require('../middleware/auth');
 
 router.post('/createPredefinedAdmin', userController.createPredefinedAdmin);
 router.post('/adminLogin', userController.adminLogin);
@@ -20,6 +20,10 @@ router.delete('/userDeleteById/:id', userController.deleteUserById);
 router.get('/getTotalPresentById/:id', attendanceController.getTotalPresentById);
 router.get('/getTotalAbsentById/:id', attendanceController.getTotalAbsentById);
 router.put('/updateUserById/:id', userController.updateUserProfile);
+
+//total present and absent in day
+router.post('/totalPresentInDay', authGuard, attendanceController.totalPresentInDay);
+
 
 //event
 router.post('/createEvent', eventController.createEvent);
@@ -43,8 +47,10 @@ router.route("/forgot/password").post(userController.forgotPassword);
 
 //project
 router.post("/createProject",addProjectController.addProject);
-
-
+router.put("/updateProjectStatus/:id",addProjectController.updateProjectStatus);
+router.get("/getAllProjectsByUserName/:username",addProjectController.getAllProjectsByUserName);
+router.get("/getAllProject",addProjectController.getAllProject);
+router.delete("/deleteProject/:id",addProjectController.deleteProject);
 
 
 module.exports = router;

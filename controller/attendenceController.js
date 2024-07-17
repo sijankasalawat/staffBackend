@@ -264,6 +264,53 @@ const getTotalAbsentById = async (req, res) => {
   }
 };
 
+const totalPresentInDay = async (req, res) => {
+  try {
+    const userId = req.user.id; // Assuming userId is retrieved from the authenticated user
+    const { date } = req.body; // Assuming date is passed in the request body
+    
+    // Validate if date is provided
+    if (!date) {
+      return res.json({
+        success: false,
+        message: "Date is required",
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Convert date to a Date object
+    const searchDate = new Date(date);
+    searchDate.setHours(0, 0, 0, 0); // Set to the start of the day
+
+    // Count documents where userId, date, and status are matched
+    const totalPresent = await Attendance.countDocuments({
+      userId: userId,
+      date: searchDate,
+      status: 'Present',
+    }); 
+
+    return res.json({
+      success: true,
+      totalPresent,
+    });
+  } catch (error) {
+    console.error("Error fetching total present days:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+
+
  
 
 module.exports = {
@@ -272,4 +319,5 @@ module.exports = {
   attendanceRecords,
   getTotalPresentById,
   getTotalAbsentById,
+  totalPresentInDay
 };
