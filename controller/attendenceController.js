@@ -1,9 +1,8 @@
-const Attendance = require('../model/attendenceModel');
+const Attendance = require("../model/attendenceModel");
 const User = require("../model/userModel");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const ObjectId = mongoose.Types.ObjectId;
-
 
 const markAttendance = async (req, res) => {
   try {
@@ -18,7 +17,7 @@ const markAttendance = async (req, res) => {
     }
 
     // Check if status is valid
-    const validStatuses = ['Present', 'Absent'];
+    const validStatuses = ["Present", "Absent"];
     if (!validStatuses.includes(status)) {
       return res.json({
         success: false,
@@ -86,7 +85,7 @@ const updateAttendance = async (req, res) => {
     }
 
     // Check if status is valid
-    const validStatuses = ['Present', 'Absent'];
+    const validStatuses = ["Present", "Absent"];
     if (!validStatuses.includes(status)) {
       return res.json({
         success: false,
@@ -143,56 +142,32 @@ const updateAttendance = async (req, res) => {
 };
 const attendanceRecords = async (req, res) => {
   try {
-    // Validate if req.params.id is a valid ObjectId
-    if (!ObjectId.isValid(req.params.id)) {
-      return res.json({
-        success: false,
-        message: "Invalid user ID",
-      });
+    const { id: userId } = req.params;
+    const option = {};
+    if (userId) {
+      option.userId = userId;
     }
 
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.json({
-        success: false,
-        message: "User not found",
-      });
-    }
-    
-    // Get the start of today
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-
-    // Get the end of today
-    const todayEnd = new Date();
-    todayEnd.setHours(23, 59, 59, 999);
-
-    // Find attendance records for the user for today
-    const attendances = await Attendance.find({
-      userId: user._id,
-      date: { $gte: todayStart, $lte: todayEnd }
-    });
-
-    // Extract the status of each attendance record
-    const statuses = attendances.map(attendance => attendance.status);
+    // Find attendance records for the user
+    const attendances = await Attendance.find(option);
 
     return res.json({
       success: true,
-      statuses,
+      attendances,
     });
   } catch (error) {
     console.error("Error fetching attendance records:", error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       success: false,
       message: "Internal server error",
     });
   }
-}
+};
 
 const getTotalPresentById = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(`Received ID: ${id}`);  // Log the received ID
+    console.log(`Received ID: ${id}`); // Log the received ID
 
     if (!ObjectId.isValid(id)) {
       return res.json({
@@ -211,7 +186,7 @@ const getTotalPresentById = async (req, res) => {
 
     const totalPresent = await Attendance.countDocuments({
       userId: id,
-      status: 'Present',
+      status: "Present",
     });
 
     return res.json({
@@ -248,7 +223,7 @@ const getTotalAbsentById = async (req, res) => {
 
     const totalAbsent = await Attendance.countDocuments({
       userId: id,
-      status: 'Absent',
+      status: "Absent",
     });
 
     return res.json({
@@ -268,7 +243,7 @@ const totalPresentInDay = async (req, res) => {
   try {
     const userId = req.user.id; // Assuming userId is retrieved from the authenticated user
     const { date } = req.body; // Assuming date is passed in the request body
-    
+
     // Validate if date is provided
     if (!date) {
       return res.json({
@@ -293,8 +268,8 @@ const totalPresentInDay = async (req, res) => {
     const totalPresent = await Attendance.countDocuments({
       userId: userId,
       date: searchDate,
-      status: 'Present',
-    }); 
+      status: "Present",
+    });
 
     return res.json({
       success: true,
@@ -309,15 +284,11 @@ const totalPresentInDay = async (req, res) => {
   }
 };
 
-
-
- 
-
 module.exports = {
   markAttendance,
   updateAttendance,
   attendanceRecords,
   getTotalPresentById,
   getTotalAbsentById,
-  totalPresentInDay
+  totalPresentInDay,
 };

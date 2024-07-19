@@ -131,7 +131,7 @@ const updateLeaveRequest = async (req, res) => {
 
   const getAllLeaveRequests = async (req, res) => {
     try {
-      const leaveRequests = await LeaveRequest.find();
+      const leaveRequests = await LeaveRequest.find().sort({ createdAt: -1 });
       res.status(200).json(leaveRequests);
     } catch (error) {
       console.error('Error fetching leave requests:', error);
@@ -143,7 +143,8 @@ const getLeaveRequestsByUserId = async (req, res) => {
     const userId = req.params.userId; // Extract user ID from URL params
 
     // Check if the user exists
-    const user = await User.findById(userId).populate('leaveRequests');
+    let user = await User.findById(userId).populate('leaveRequests')
+   
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -154,7 +155,7 @@ const getLeaveRequestsByUserId = async (req, res) => {
     // Respond with the user's leave requests
     res.status(200).json({
       success: true,
-      leaveRequests: user.leaveRequests,
+      leaveRequests: user.leaveRequests?.sort((a, b) => b.createdAt - a.createdAt),
     });
   } catch (error) {
     console.error('Error fetching leave requests:', error);
